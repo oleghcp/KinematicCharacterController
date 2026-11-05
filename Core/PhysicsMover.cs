@@ -1,23 +1,8 @@
 ﻿using System;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 namespace KinematicCharacterController
 {
-    /// <summary>
-    /// Represents the entire state of a PhysicsMover that is pertinent for simulation.
-    /// Use this to save state or revert to past state
-    /// </summary>
-    [System.Serializable]
-    public struct PhysicsMoverState
-    {
-        public Vector3 Position;
-        public Quaternion Rotation;
-        public Vector3 Velocity;
-        public Vector3 AngularVelocity;
-    }
-
     /// <summary>
     /// Component that manages the movement of moving kinematic rigidbodies for
     /// proper interaction with characters
@@ -25,6 +10,9 @@ namespace KinematicCharacterController
     [RequireComponent(typeof(Rigidbody))]
     public class PhysicsMover : MonoBehaviour
     {
+        private Vector3 _internalTransientPosition;
+        private Quaternion _internalTransientRotation;
+
         /// <summary>
         /// The mover's Rigidbody
         /// </summary>
@@ -96,37 +84,22 @@ namespace KinematicCharacterController
         /// </summary>
         public Quaternion InitialSimulationRotation { get; private set; }
 
-        private Vector3 _internalTransientPosition;
-
         /// <summary>
         /// The mover's rotation (always up-to-date during the character update phase)
         /// </summary>
         public Vector3 TransientPosition
         {
-            get
-            {
-                return _internalTransientPosition;
-            }
-            private set
-            {
-                _internalTransientPosition = value;
-            }
+            get => _internalTransientPosition;
+            private set => _internalTransientPosition = value;
         }
 
-        private Quaternion _internalTransientRotation;
         /// <summary>
         /// The mover's rotation (always up-to-date during the character update phase)
         /// </summary>
         public Quaternion TransientRotation
         {
-            get
-            {
-                return _internalTransientRotation;
-            }
-            private set
-            {
-                _internalTransientRotation = value;
-            }
+            get => _internalTransientRotation;
+            private set => _internalTransientRotation = value;
         }
 
 
@@ -146,7 +119,6 @@ namespace KinematicCharacterController
         public void ValidateData()
         {
             Rigidbody = gameObject.GetComponent<Rigidbody>();
-
             Rigidbody.centerOfMass = Vector3.zero;
             Rigidbody.maxAngularVelocity = Mathf.Infinity;
             Rigidbody.maxDepenetrationVelocity = Mathf.Infinity;
@@ -167,7 +139,7 @@ namespace KinematicCharacterController
 
         private void Awake()
         {
-            Transform = this.transform;
+            Transform = transform;
             ValidateData();
 
             TransientPosition = Rigidbody.position;
@@ -252,10 +224,23 @@ namespace KinematicCharacterController
             if (deltaTime > 0f)
             {
                 Velocity = (TransientPosition - InitialSimulationPosition) / deltaTime;
-                                
+
                 Quaternion rotationFromCurrentToGoal = TransientRotation * (Quaternion.Inverse(InitialSimulationRotation));
                 AngularVelocity = (Mathf.Deg2Rad * rotationFromCurrentToGoal.eulerAngles) / deltaTime;
             }
         }
+    }
+
+    /// <summary>
+    /// Represents the entire state of a PhysicsMover that is pertinent for simulation.
+    /// Use this to save state or revert to past state
+    /// </summary>
+    [Serializable]
+    public struct PhysicsMoverState
+    {
+        public Vector3 Position;
+        public Quaternion Rotation;
+        public Vector3 Velocity;
+        public Vector3 AngularVelocity;
     }
 }
