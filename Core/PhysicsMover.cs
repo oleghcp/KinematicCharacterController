@@ -30,21 +30,25 @@ namespace KinematicCharacterController
         /// </summary>
         [NonSerialized]
         public IMoverController MoverController;
+
         /// <summary>
         /// Remembers latest position in interpolation
         /// </summary>
         [NonSerialized]
         public Vector3 LatestInterpolationPosition;
+
         /// <summary>
         /// Remembers latest rotation in interpolation
         /// </summary>
         [NonSerialized]
         public Quaternion LatestInterpolationRotation;
+
         /// <summary>
         /// The latest movement made by interpolation
         /// </summary>
         [NonSerialized]
         public Vector3 PositionDeltaFromInterpolation;
+
         /// <summary>
         /// The latest rotation made by interpolation
         /// </summary>

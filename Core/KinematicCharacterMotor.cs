@@ -33,6 +33,9 @@ namespace KinematicCharacterController
         public const float ExtraStepHeightPadding = 0.01f;
 
         [Header("Components")]
+        [SerializeField]
+        private Transform _motorTransform;
+
         [ReadOnly]
         [SerializeField, FormerlySerializedAs("Capsule")]
         private CapsuleCollider _capsule;
@@ -291,7 +294,6 @@ namespace KinematicCharacterController
         private Vector3 _cachedWorldRight = Vector3.right;
         private Vector3 _cachedZeroVector = Vector3.zero;
 
-        private Transform _motorTransform;
         private Rigidbody _attachedRigidbody;
         private Vector3 _transientPosition;
         private Vector3 _characterUp;
@@ -620,7 +622,9 @@ namespace KinematicCharacterController
 
         private void Awake()
         {
-            _motorTransform = transform;
+            if (_motorTransform == null)
+                _motorTransform = transform;
+
             ValidateData();
 
             _transientPosition = _motorTransform.position;
