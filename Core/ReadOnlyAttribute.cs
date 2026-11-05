@@ -1,8 +1,8 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 
 namespace KinematicCharacterController
 {
-    public class ReadOnlyAttribute : PropertyAttribute
-    {
-    }
+    [AttributeUsage(AttributeTargets.Field)]
+    public class ReadOnlyAttribute : PropertyAttribute { }
 }
