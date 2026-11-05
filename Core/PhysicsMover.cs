@@ -8,6 +8,7 @@ namespace KinematicCharacterController
     /// proper interaction with characters
     /// </summary>
     [RequireComponent(typeof(Rigidbody))]
+    [DisallowMultipleComponent]
     public class PhysicsMover : MonoBehaviour
     {
         private Vector3 _internalTransientPosition;

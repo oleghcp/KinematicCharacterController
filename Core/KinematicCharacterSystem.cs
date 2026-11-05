@@ -7,6 +7,7 @@ namespace KinematicCharacterController
     /// The system that manages the simulation of KinematicCharacterMotor and PhysicsMover
     /// </summary>
     [DefaultExecutionOrder(-100)]
+    [DisallowMultipleComponent]
     public class KinematicCharacterSystem : MonoBehaviour
     {
         private static KinematicCharacterSystem _instance;
