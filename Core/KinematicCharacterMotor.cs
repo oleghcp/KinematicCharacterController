@@ -117,10 +117,10 @@ namespace KinematicCharacterController
         [Tooltip("Minimum length of a step that the character can step on (used in Extra stepping method). Use this to let the character step on steps that are smaller that its radius")]
         public float MinRequiredStepDepth = 0.1f;
 
-        [Header("Ledge settings")]
         /// <summary>
         /// Handles properly detecting ledge information and grounding status, but has a performance cost.
         /// </summary>
+        [Header("Ledge settings")]
         [Tooltip("Handles properly detecting ledge information and grounding status, but has a performance cost.")]
         public bool LedgeAndDenivelationHandling = true;
 
@@ -209,6 +209,7 @@ namespace KinematicCharacterController
         [Tooltip("Sets the remaining movement to zero if exceed max movement iterations")]
         public bool KillRemainingMovementWhenExceedMaxMovementIterations = true;
 
+        #region NonSerialized
         /// <summary>
         /// Contains the current grounding information
         /// </summary>
@@ -268,6 +269,7 @@ namespace KinematicCharacterController
         /// </summary>
         [NonSerialized]
         public Vector3 BaseVelocity;
+        #endregion
 
         private RaycastHit[] _internalCharacterHits = new RaycastHit[MaxHitsBudget];
         private Collider[] _internalProbedColliders = new Collider[MaxCollisionBudget];
