@@ -87,20 +87,12 @@ namespace KinematicCharacterController
         /// <summary>
         /// The mover's rotation (always up-to-date during the character update phase)
         /// </summary>
-        public Vector3 TransientPosition
-        {
-            get => _internalTransientPosition;
-            private set => _internalTransientPosition = value;
-        }
+        public Vector3 TransientPosition => _internalTransientPosition;
 
         /// <summary>
         /// The mover's rotation (always up-to-date during the character update phase)
         /// </summary>
-        public Quaternion TransientRotation
-        {
-            get => _internalTransientRotation;
-            private set => _internalTransientRotation = value;
-        }
+        public Quaternion TransientRotation => _internalTransientRotation;
 
 
         private void Reset()
@@ -142,8 +134,8 @@ namespace KinematicCharacterController
             Transform = transform;
             ValidateData();
 
-            TransientPosition = Rigidbody.position;
-            TransientRotation = Rigidbody.rotation;
+            _internalTransientPosition = Rigidbody.position;
+            _internalTransientRotation = Rigidbody.rotation;
             InitialSimulationPosition = Rigidbody.position;
             InitialSimulationRotation = Rigidbody.rotation;
             LatestInterpolationPosition = Transform.position;
@@ -158,7 +150,7 @@ namespace KinematicCharacterController
             Transform.position = position;
             Rigidbody.position = position;
             InitialSimulationPosition = position;
-            TransientPosition = position;
+            _internalTransientPosition = position;
         }
 
         /// <summary>
@@ -169,7 +161,7 @@ namespace KinematicCharacterController
             Transform.rotation = rotation;
             Rigidbody.rotation = rotation;
             InitialSimulationRotation = rotation;
-            TransientRotation = rotation;
+            _internalTransientRotation = rotation;
         }
 
         /// <summary>
@@ -182,8 +174,8 @@ namespace KinematicCharacterController
             Rigidbody.rotation = rotation;
             InitialSimulationPosition = position;
             InitialSimulationRotation = rotation;
-            TransientPosition = position;
-            TransientRotation = rotation;
+            _internalTransientPosition = position;
+            _internalTransientRotation = rotation;
         }
 
         /// <summary>
@@ -191,20 +183,19 @@ namespace KinematicCharacterController
         /// </summary>
         public PhysicsMoverState GetState()
         {
-            PhysicsMoverState state = new PhysicsMoverState();
-
-            state.Position = TransientPosition;
-            state.Rotation = TransientRotation;
-            state.Velocity = Velocity;
-            state.AngularVelocity = AngularVelocity;
-
-            return state;
+            return new PhysicsMoverState
+            {
+                Position = _internalTransientPosition,
+                Rotation = _internalTransientRotation,
+                Velocity = Velocity,
+                AngularVelocity = AngularVelocity
+            };
         }
 
         /// <summary>
         /// Applies a mover state instantly
         /// </summary>
-        public void ApplyState(PhysicsMoverState state)
+        public void ApplyState(in PhysicsMoverState state)
         {
             SetPositionAndRotation(state.Position, state.Rotation);
             Velocity = state.Velocity;
@@ -212,20 +203,20 @@ namespace KinematicCharacterController
         }
 
         /// <summary>
-        /// Caches velocity values based on deltatime and target position/rotations
+        /// Caches velocity values based on delta time and target position/rotations
         /// </summary>
         public void VelocityUpdate(float deltaTime)
         {
-            InitialSimulationPosition = TransientPosition;
-            InitialSimulationRotation = TransientRotation;
+            InitialSimulationPosition = _internalTransientPosition;
+            InitialSimulationRotation = _internalTransientRotation;
 
             MoverController.UpdateMovement(out _internalTransientPosition, out _internalTransientRotation, deltaTime);
 
             if (deltaTime > 0f)
             {
-                Velocity = (TransientPosition - InitialSimulationPosition) / deltaTime;
+                Velocity = (_internalTransientPosition - InitialSimulationPosition) / deltaTime;
 
-                Quaternion rotationFromCurrentToGoal = TransientRotation * (Quaternion.Inverse(InitialSimulationRotation));
+                Quaternion rotationFromCurrentToGoal = _internalTransientRotation * (Quaternion.Inverse(InitialSimulationRotation));
                 AngularVelocity = (Mathf.Deg2Rad * rotationFromCurrentToGoal.eulerAngles) / deltaTime;
             }
         }

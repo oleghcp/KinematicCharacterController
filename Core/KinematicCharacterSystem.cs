@@ -215,7 +215,6 @@ namespace KinematicCharacterController
                 KinematicCharacterMotor motor = motors[i];
 
                 motor.UpdatePhase2(deltaTime);
-
                 motor.Transform.SetPositionAndRotation(motor.TransientPosition, motor.TransientRotation);
             }
 #pragma warning restore 0162
@@ -281,9 +280,8 @@ namespace KinematicCharacterController
             {
                 PhysicsMover mover = movers[i];
 
-                mover.Transform.SetPositionAndRotation(
-                    Vector3.Lerp(mover.InitialTickPosition, mover.TransientPosition, interpolationFactor),
-                    Quaternion.Slerp(mover.InitialTickRotation, mover.TransientRotation, interpolationFactor));
+                mover.Transform.SetPositionAndRotation(Vector3.Lerp(mover.InitialTickPosition, mover.TransientPosition, interpolationFactor),
+                                                       Quaternion.Slerp(mover.InitialTickRotation, mover.TransientRotation, interpolationFactor));
 
                 Vector3 newPos = mover.Transform.position;
                 Quaternion newRot = mover.Transform.rotation;
