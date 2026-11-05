@@ -1,0 +1,14 @@
+﻿{
+    "name": "com.philsa.kcc",
+    "displayName": "Kinematic Character Controller",
+    "version": "3.4.4",
+    "description": "A relatively low-level character controller solution.",
+    "unity": "2021.3",    
+    "keywords": [ "kinematic", "character", "controller" ],
+    "license": "Extension Asset",
+    "dependencies": {},
+    "author": {
+        "name": "Philippe St-Amand",
+        "email": "store.pstamand@gmail.com"
+    }
+}
