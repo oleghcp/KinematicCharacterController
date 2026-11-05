@@ -162,7 +162,7 @@ namespace KinematicCharacterController
                 motor.InitialTickPosition = motor.TransientPosition;
                 motor.InitialTickRotation = motor.TransientRotation;
 
-                motor.Transform.SetPositionAndRotation(motor.TransientPosition, motor.TransientRotation);
+                motor.MotorTransform.SetPositionAndRotation(motor.TransientPosition, motor.TransientRotation);
             }
 
             List<PhysicsMover> movers = PhysicsMovers;
@@ -216,7 +216,7 @@ namespace KinematicCharacterController
                 KinematicCharacterMotor motor = motors[i];
 
                 motor.UpdatePhase2(deltaTime);
-                motor.Transform.SetPositionAndRotation(motor.TransientPosition, motor.TransientRotation);
+                motor.MotorTransform.SetPositionAndRotation(motor.TransientPosition, motor.TransientRotation);
             }
 #pragma warning restore 0162
         }
@@ -234,7 +234,7 @@ namespace KinematicCharacterController
             for (int i = 0; i < motors.Count; i++)
             {
                 KinematicCharacterMotor motor = motors[i];
-                motor.Transform.SetPositionAndRotation(motor.InitialTickPosition, motor.InitialTickRotation);
+                motor.MotorTransform.SetPositionAndRotation(motor.InitialTickPosition, motor.InitialTickRotation);
             }
 
             List<PhysicsMover> movers = PhysicsMovers;
@@ -271,7 +271,7 @@ namespace KinematicCharacterController
             {
                 KinematicCharacterMotor motor = motors[i];
 
-                motor.Transform.SetPositionAndRotation(Vector3.Lerp(motor.InitialTickPosition, motor.TransientPosition, interpolationFactor),
+                motor.MotorTransform.SetPositionAndRotation(Vector3.Lerp(motor.InitialTickPosition, motor.TransientPosition, interpolationFactor),
                                                        Quaternion.Slerp(motor.InitialTickRotation, motor.TransientRotation, interpolationFactor));
             }
 
