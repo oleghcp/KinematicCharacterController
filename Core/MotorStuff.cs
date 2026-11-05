@@ -75,17 +75,20 @@ namespace KinematicCharacterController
         public Collider GroundCollider;
         public Vector3 GroundPoint;
 
-        public void CopyFrom(CharacterTransientGroundingReport transientGroundingReport)
+        public static explicit operator CharacterGroundingReport(CharacterTransientGroundingReport transientGroundingReport)
         {
-            FoundAnyGround = transientGroundingReport.FoundAnyGround;
-            IsStableOnGround = transientGroundingReport.IsStableOnGround;
-            SnappingPrevented = transientGroundingReport.SnappingPrevented;
-            GroundNormal = transientGroundingReport.GroundNormal;
-            InnerGroundNormal = transientGroundingReport.InnerGroundNormal;
-            OuterGroundNormal = transientGroundingReport.OuterGroundNormal;
+            return new CharacterGroundingReport
+            {
+                FoundAnyGround = transientGroundingReport.FoundAnyGround,
+                IsStableOnGround = transientGroundingReport.IsStableOnGround,
+                SnappingPrevented = transientGroundingReport.SnappingPrevented,
+                GroundNormal = transientGroundingReport.GroundNormal,
+                InnerGroundNormal = transientGroundingReport.InnerGroundNormal,
+                OuterGroundNormal = transientGroundingReport.OuterGroundNormal,
 
-            GroundCollider = null;
-            GroundPoint = Vector3.zero;
+                GroundCollider = null,
+                GroundPoint = Vector3.zero,
+            };
         }
     }
 
@@ -101,14 +104,17 @@ namespace KinematicCharacterController
         public Vector3 InnerGroundNormal;
         public Vector3 OuterGroundNormal;
 
-        public void CopyFrom(CharacterGroundingReport groundingReport)
+        public static explicit operator CharacterTransientGroundingReport(CharacterGroundingReport groundingReport)
         {
-            FoundAnyGround = groundingReport.FoundAnyGround;
-            IsStableOnGround = groundingReport.IsStableOnGround;
-            SnappingPrevented = groundingReport.SnappingPrevented;
-            GroundNormal = groundingReport.GroundNormal;
-            InnerGroundNormal = groundingReport.InnerGroundNormal;
-            OuterGroundNormal = groundingReport.OuterGroundNormal;
+            return new CharacterTransientGroundingReport
+            {
+                FoundAnyGround = groundingReport.FoundAnyGround,
+                IsStableOnGround = groundingReport.IsStableOnGround,
+                SnappingPrevented = groundingReport.SnappingPrevented,
+                GroundNormal = groundingReport.GroundNormal,
+                InnerGroundNormal = groundingReport.InnerGroundNormal,
+                OuterGroundNormal = groundingReport.OuterGroundNormal,
+            };
         }
     }
 

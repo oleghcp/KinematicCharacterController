@@ -541,10 +541,9 @@ namespace KinematicCharacterController
                 MustUngroundTime = _mustUngroundTimeCounter,
                 LastMovementIterationFoundAnyGround = LastMovementIterationFoundAnyGround,
 
+                GroundingStatus = (CharacterTransientGroundingReport)GroundingStatus,
                 AttachedRigidbody = _attachedRigidbody,
             };
-
-            state.GroundingStatus.CopyFrom(GroundingStatus);
 
             return state;
         }
@@ -562,7 +561,7 @@ namespace KinematicCharacterController
             _mustUnground = state.MustUnground;
             _mustUngroundTimeCounter = state.MustUngroundTime;
             LastMovementIterationFoundAnyGround = state.LastMovementIterationFoundAnyGround;
-            GroundingStatus.CopyFrom(state.GroundingStatus);
+            GroundingStatus = (CharacterGroundingReport)state.GroundingStatus;
             _attachedRigidbody = state.AttachedRigidbody;
         }
 
@@ -621,7 +620,7 @@ namespace KinematicCharacterController
             // NaN propagation safety stop
             if (float.IsNaN(BaseVelocity.x) || float.IsNaN(BaseVelocity.y) || float.IsNaN(BaseVelocity.z))
                 BaseVelocity = Vector3.zero;
-            
+
             if (float.IsNaN(_attachedRigidbodyVelocity.x) || float.IsNaN(_attachedRigidbodyVelocity.y) || float.IsNaN(_attachedRigidbodyVelocity.z))
                 _attachedRigidbodyVelocity = Vector3.zero;
 
@@ -664,7 +663,7 @@ namespace KinematicCharacterController
             }
             #endregion
 
-            LastGroundingStatus.CopyFrom(GroundingStatus);
+            LastGroundingStatus = (CharacterTransientGroundingReport)GroundingStatus;
             GroundingStatus = new CharacterGroundingReport
             {
                 GroundNormal = _characterUp
