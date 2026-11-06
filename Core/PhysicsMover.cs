@@ -221,8 +221,8 @@ namespace KinematicCharacterController
             {
                 Velocity = (_internalTransientPosition - InitialSimulationPosition) / deltaTime;
 
-                Quaternion rotationFromCurrentToGoal = _internalTransientRotation * (Quaternion.Inverse(InitialSimulationRotation));
-                AngularVelocity = (Mathf.Deg2Rad * rotationFromCurrentToGoal.eulerAngles) / deltaTime;
+                Quaternion rotationFromCurrentToGoal = _internalTransientRotation * Quaternion.Inverse(InitialSimulationRotation);
+                AngularVelocity = rotationFromCurrentToGoal.eulerAngles * (Mathf.Deg2Rad / deltaTime);
             }
         }
     }
