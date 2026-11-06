@@ -1,4 +1,5 @@
-﻿using KinematicCharacterController;
+﻿using System.Collections.Generic;
+using KinematicCharacterController;
 using UnityEditor;
 using UnityEngine;
 
@@ -12,8 +13,11 @@ public class PauseStateHandler
 
     private static void HandlePauseStateChange(PauseState state)
     {
-        foreach (KinematicCharacterMotor motor in KinematicCharacterSystem.CharacterMotors)
+        IReadOnlyList<KinematicCharacterMotor> motors = KinematicCharacterSystem.CharacterMotors;
+
+        for (int i = 0; i < motors.Count; i++)
         {
+            KinematicCharacterMotor motor = motors[i];
             motor.SetPositionAndRotation(motor.MotorTransform.position, motor.MotorTransform.rotation, true);
         }
     }

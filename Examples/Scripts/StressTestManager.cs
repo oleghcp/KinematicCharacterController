@@ -1,6 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.UI;
 
 namespace KinematicCharacterController.Examples
@@ -31,8 +29,7 @@ namespace KinematicCharacterController.Examples
 
         private void Update()
         {
-
-            KinematicCharacterSystem.Simulate(Time.deltaTime, KinematicCharacterSystem.CharacterMotors, KinematicCharacterSystem.PhysicsMovers);
+            KinematicCharacterSystem.Simulate(Time.deltaTime);
         }
 
         private void UpdateOnImages()
@@ -45,21 +42,16 @@ namespace KinematicCharacterController.Examples
         public void SetSpawnCount(string count)
         {
             if (int.TryParse(count, out int result))
-            {
                 SpawnCount = result;
-            }
         }
 
         public void ToggleRendering()
         {
-            if(Camera.cullingMask == -1)
-            {
+            if (Camera.cullingMask == -1)
                 Camera.cullingMask = UIMask;
-            }
             else
-            {
                 Camera.cullingMask = -1;
-            }
+
             UpdateOnImages();
         }
 
@@ -84,14 +76,14 @@ namespace KinematicCharacterController.Examples
             AIController.Characters.Clear();
 
             int charsPerRow = Mathf.CeilToInt(Mathf.Sqrt(SpawnCount));
-            Vector3 firstPos = ((charsPerRow * SpawnDistance) * 0.5f) * -Vector3.one;
+            Vector3 firstPos = -Vector3.one * (charsPerRow * SpawnDistance * 0.5f);
             firstPos.y = 0f;
 
             for (int i = 0; i < SpawnCount; i++)
             {
                 int row = i / charsPerRow;
                 int col = i % charsPerRow;
-                Vector3 pos = firstPos + (Vector3.right * row * SpawnDistance) + (Vector3.forward * col * SpawnDistance);
+                Vector3 pos = firstPos + (Vector3.right * (row * SpawnDistance)) + (Vector3.forward * (col * SpawnDistance));
 
                 ExampleCharacterController newChar = Instantiate(CharacterPrefab);
                 newChar.Motor.SetPosition(pos);
