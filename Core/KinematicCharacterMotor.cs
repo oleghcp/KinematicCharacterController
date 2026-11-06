@@ -853,7 +853,7 @@ namespace KinematicCharacterController
                     _attachedRigidbodyVelocity = tmpVelocityFromCurrentAttachedRigidbody;
 
                     // Rotation from attached rigidbody
-                    Vector3 newForward = Vector3.ProjectOnPlane(Quaternion.Euler(Mathf.Rad2Deg * tmpAngularVelocityFromCurrentAttachedRigidbody * deltaTime) * _characterForward, _characterUp).normalized;
+                    Vector3 newForward = Vector3.ProjectOnPlane(Quaternion.Euler(tmpAngularVelocityFromCurrentAttachedRigidbody * (Mathf.Rad2Deg * deltaTime)) * _characterForward, _characterUp).normalized;
                     TransientRotation = Quaternion.LookRotation(newForward, _characterUp);
                 }
 
@@ -1124,7 +1124,7 @@ namespace KinematicCharacterController
             RaycastHit groundSweepHit = new RaycastHit();
             bool groundSweepingIsOver = false;
             Vector3 groundSweepPosition = probingPosition;
-            Vector3 groundSweepDirection = (atRotation * -_cachedWorldUp);
+            Vector3 groundSweepDirection = atRotation * -_cachedWorldUp;
             float groundProbeDistanceRemaining = probingDistance;
 
             while (groundProbeDistanceRemaining > 0 && (groundSweepsMade <= MaxGroundingSweepIterations) && !groundSweepingIsOver)
@@ -1168,7 +1168,7 @@ namespace KinematicCharacterController
                     else
                     {
                         // Calculate movement from this iteration and advance position
-                        Vector3 sweepMovement = (groundSweepDirection * groundSweepHit.distance) + ((atRotation * _cachedWorldUp) * Mathf.Max(CollisionOffset, groundSweepHit.distance));
+                        Vector3 sweepMovement = (groundSweepDirection * groundSweepHit.distance) + (atRotation * _cachedWorldUp * Mathf.Max(CollisionOffset, groundSweepHit.distance));
                         groundSweepPosition = groundSweepPosition + sweepMovement;
 
                         // Set remaining distance
@@ -1334,7 +1334,7 @@ namespace KinematicCharacterController
                 if (foundClosestHit)
                 {
                     // Calculate movement from this iteration
-                    Vector3 sweepMovement = (remainingMovementDirection * (Mathf.Max(0f, closestSweepHitDistance - CollisionOffset)));
+                    Vector3 sweepMovement = remainingMovementDirection * Mathf.Max(0f, closestSweepHitDistance - CollisionOffset);
                     tmpMovedPosition += sweepMovement;
                     remainingMovementMagnitude -= sweepMovement.magnitude;
 
@@ -1350,8 +1350,7 @@ namespace KinematicCharacterController
                         if (obstructionCorrelation <= CorrelationForVerticalObstruction)
                         {
                             Vector3 stepForwardDirection = Vector3.ProjectOnPlane(-closestSweepHitNormal, _characterUp).normalized;
-                            Vector3 stepCastStartPoint = (tmpMovedPosition + (stepForwardDirection * SteppingForwardDistance)) +
-                                (_characterUp * MaxStepHeight);
+                            Vector3 stepCastStartPoint = tmpMovedPosition + (stepForwardDirection * SteppingForwardDistance) + (_characterUp * MaxStepHeight);
 
                             // Cast downward from the top of the stepping height
                             int nbStepHits = CharacterCollisionsSweep(stepCastStartPoint, // position
@@ -1919,8 +1918,8 @@ namespace KinematicCharacterController
             RaycastHit outerStepHit;
             Vector3 characterUp = characterRotation * _cachedWorldUp;
             Vector3 verticalCharToHit = Vector3.Project((hitPoint - characterPosition), characterUp);
-            Vector3 horizontalCharToHitDirection = Vector3.ProjectOnPlane((hitPoint - characterPosition), characterUp).normalized;
-            Vector3 stepCheckStartPos = (hitPoint - verticalCharToHit) + (characterUp * MaxStepHeight) + (horizontalCharToHitDirection * CollisionOffset * 3f);
+            Vector3 horizontalCharToHitDirection = Vector3.ProjectOnPlane(hitPoint - characterPosition, characterUp).normalized;
+            Vector3 stepCheckStartPos = (hitPoint - verticalCharToHit) + (characterUp * MaxStepHeight) + (horizontalCharToHitDirection * (CollisionOffset * 3f));
 
             // Do outer step check with capsule cast on hit point
             nbStepHits = CharacterCollisionsSweep(stepCheckStartPos,
@@ -2097,7 +2096,7 @@ namespace KinematicCharacterController
                     Vector3 centerOfRotation = interactiveRigidbody.transform.TransformPoint(interactiveRigidbody.centerOfMass);
 
                     Vector3 centerOfRotationToPoint = atPoint - centerOfRotation;
-                    Quaternion rotationFromInteractiveRigidbody = Quaternion.Euler(Mathf.Rad2Deg * angularVelocity * deltaTime);
+                    Quaternion rotationFromInteractiveRigidbody = Quaternion.Euler(angularVelocity * (Mathf.Rad2Deg * deltaTime));
                     Vector3 finalPointPosition = centerOfRotation + (rotationFromInteractiveRigidbody * centerOfRotationToPoint);
                     linearVelocity += (finalPointPosition - atPoint) / deltaTime;
                 }
