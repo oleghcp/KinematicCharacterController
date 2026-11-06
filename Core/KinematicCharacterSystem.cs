@@ -37,7 +37,7 @@ namespace KinematicCharacterController
             _instance = this;
         }
 
-        // This is to prevent duplicating the singleton gameobject on script recompiles
+        // This is to prevent duplicating the singleton game object on script recompiles
         private void OnDisable()
         {
             Destroy(gameObject);
@@ -65,10 +65,17 @@ namespace KinematicCharacterController
                 CustomInterpolationUpdate();
         }
 
+        [Obsolete("GetInstance is obsolete. Use Instance property instead.")]
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        public static KinematicCharacterSystem GetInstance()
+        {
+            return _instance;
+        }
+
         /// <summary>
         /// Creates a KinematicCharacterSystem instance if there isn't already one
         /// </summary>
-        internal static void EnsureCreation()
+        public static void EnsureCreation()
         {
             if (_instance == null)
             {
@@ -82,13 +89,6 @@ namespace KinematicCharacterController
 
                 DontDestroyOnLoad(systemGameObject);
             }
-        }
-
-        [Obsolete("GetInstance is obsolete. Use Instance property instead.")]
-        [EditorBrowsable(EditorBrowsableState.Never)]
-        public static KinematicCharacterSystem GetInstance()
-        {
-            return _instance;
         }
 
         /// <summary>
@@ -106,6 +106,20 @@ namespace KinematicCharacterController
         }
 
         /// <summary>
+        /// Sets the maximum capacity of the physics movers list, to prevent allocations when adding movers
+        /// </summary>
+        /// <param name="capacity"></param>
+        public static void SetPhysicsMoversCapacity(int capacity)
+        {
+            List<PhysicsMover> movers = _instance._physicsMovers;
+
+            if (capacity < movers.Count)
+                capacity = movers.Count;
+
+            movers.Capacity = capacity;
+        }
+
+        /// <summary>
         /// Registers a KinematicCharacterMotor into the system
         /// </summary>
         public static void RegisterCharacterMotor(KinematicCharacterMotor motor)
@@ -119,20 +133,6 @@ namespace KinematicCharacterController
         public static void UnregisterCharacterMotor(KinematicCharacterMotor motor)
         {
             _instance._characterMotors.Remove(motor);
-        }
-
-        /// <summary>
-        /// Sets the maximum capacity of the physics movers list, to prevent allocations when adding movers
-        /// </summary>
-        /// <param name="capacity"></param>
-        public static void SetPhysicsMoversCapacity(int capacity)
-        {
-            List<PhysicsMover> movers = _instance._physicsMovers;
-
-            if (capacity < movers.Count)
-                capacity = movers.Count;
-
-            movers.Capacity = capacity;
         }
 
         /// <summary>
@@ -198,7 +198,6 @@ namespace KinematicCharacterController
             int characterMotorsCount = motors.Count;
             int physicsMoversCount = movers.Count;
 
-#pragma warning disable 0162
             // Update PhysicsMover velocities
             for (int i = 0; i < physicsMoversCount; i++)
             {
@@ -229,7 +228,6 @@ namespace KinematicCharacterController
                 motor.UpdatePhase2(deltaTime);
                 motor.MotorTransform.SetPositionAndRotation(motor.TransientPosition, motor.TransientRotation);
             }
-#pragma warning restore 0162
         }
 
         /// <summary>
