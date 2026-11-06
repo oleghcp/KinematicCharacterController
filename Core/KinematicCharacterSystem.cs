@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using UnityEngine;
 
@@ -21,7 +23,11 @@ namespace KinematicCharacterController
         private List<KinematicCharacterMotor> _characterMotors = new List<KinematicCharacterMotor>();
         private List<PhysicsMover> _physicsMovers = new List<PhysicsMover>();
 
+        /// <summary>
+        /// Gets the KinematicCharacterSystem instance if any
+        /// </summary>
         public static KinematicCharacterSystem Instance => _instance;
+
         public static KCCSettings Settings => _instance._settings;
         public static IReadOnlyList<KinematicCharacterMotor> CharacterMotors => _instance._characterMotors;
         public static IReadOnlyList<PhysicsMover> PhysicsMovers => _instance._physicsMovers;
@@ -78,10 +84,8 @@ namespace KinematicCharacterController
             }
         }
 
-        /// <summary>
-        /// Gets the KinematicCharacterSystem instance if any
-        /// </summary>
-        /// <returns></returns>
+        [Obsolete("GetInstance is obsolete. Use Instance property instead.")]
+        [EditorBrowsable(EditorBrowsableState.Never)]
         public static KinematicCharacterSystem GetInstance()
         {
             return _instance;
