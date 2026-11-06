@@ -23,8 +23,8 @@ namespace KinematicCharacterController.Examples
             CountField.text = SpawnCount.ToString();
             UpdateOnImages();
 
-            KinematicCharacterSystem.Settings.AutoSimulation = false;
-            KinematicCharacterSystem.Settings.Interpolate = false;
+            KinematicCharacterSystem.Instance.AutoSimulation = false;
+            KinematicCharacterSystem.Instance.Interpolate = false;
         }
 
         private void Update()
@@ -36,7 +36,7 @@ namespace KinematicCharacterController.Examples
         {
             RenderOn.enabled = Camera.cullingMask == -1;
             SimOn.enabled = Physics.autoSimulation;
-            InterpOn.enabled = KinematicCharacterSystem.Settings.Interpolate;
+            InterpOn.enabled = KinematicCharacterSystem.Instance.Interpolate;
         }
 
         public void SetSpawnCount(string count)
@@ -63,7 +63,7 @@ namespace KinematicCharacterController.Examples
 
         public void ToggleInterpolation()
         {
-            KinematicCharacterSystem.Settings.Interpolate = !KinematicCharacterSystem.Settings.Interpolate;
+            KinematicCharacterSystem.Instance.Interpolate = !KinematicCharacterSystem.Instance.Interpolate;
             UpdateOnImages();
         }
 

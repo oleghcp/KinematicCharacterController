@@ -18,17 +18,27 @@ namespace KinematicCharacterController
         private float _lastCustomInterpolationStartTime = -1f;
         private float _lastCustomInterpolationDeltaTime = -1f;
 
-        private KCCSettings _settings;
-
         private List<KinematicCharacterMotor> _characterMotors = new List<KinematicCharacterMotor>();
         private List<PhysicsMover> _physicsMovers = new List<PhysicsMover>();
+
+        /// <summary>
+        /// Determines if the system simulates automatically.
+        /// If true, the simulation is done on FixedUpdate
+        /// </summary>
+        [Tooltip("Determines if the system simulates automatically. If true, the simulation is done on FixedUpdate")]
+        public bool AutoSimulation = true;
+
+        /// <summary>
+        /// Should interpolation of characters and PhysicsMovers be handled
+        /// </summary>
+        [Tooltip("Should interpolation of characters and PhysicsMovers be handled")]
+        public bool Interpolate = true;
 
         /// <summary>
         /// Gets the KinematicCharacterSystem instance if any
         /// </summary>
         public static KinematicCharacterSystem Instance => _instance;
 
-        public static KCCSettings Settings => _instance._settings;
         public static IReadOnlyList<KinematicCharacterMotor> CharacterMotors => _instance._characterMotors;
         public static IReadOnlyList<PhysicsMover> PhysicsMovers => _instance._physicsMovers;
 
@@ -45,23 +55,23 @@ namespace KinematicCharacterController
 
         private void FixedUpdate()
         {
-            if (_settings.AutoSimulation)
-            {
-                float deltaTime = Time.deltaTime;
+            if (!AutoSimulation)
+                return;
 
-                if (_settings.Interpolate)
-                    PreSimulationInterpolationUpdate(deltaTime);
+            float deltaTime = Time.deltaTime;
 
-                Simulate(deltaTime);
+            if (Interpolate)
+                PreSimulationInterpolationUpdate(deltaTime);
 
-                if (_settings.Interpolate)
-                    PostSimulationInterpolationUpdate(deltaTime);
-            }
+            Simulate(deltaTime);
+
+            if (Interpolate)
+                PostSimulationInterpolationUpdate(deltaTime);
         }
 
         private void LateUpdate()
         {
-            if (_settings.Interpolate)
+            if (Interpolate)
                 CustomInterpolationUpdate();
         }
 
@@ -84,8 +94,6 @@ namespace KinematicCharacterController
 
                 systemGameObject.hideFlags = HideFlags.NotEditable;
                 _instance.hideFlags = HideFlags.NotEditable;
-
-                _instance._settings = ScriptableObject.CreateInstance<KCCSettings>();
 
                 DontDestroyOnLoad(systemGameObject);
             }
@@ -141,7 +149,6 @@ namespace KinematicCharacterController
         public static void RegisterPhysicsMover(PhysicsMover mover)
         {
             _instance._physicsMovers.Add(mover);
-
             mover.Rigidbody.interpolation = RigidbodyInterpolation.None;
         }
 
