@@ -99,6 +99,29 @@ namespace KinematicCharacterController
         /// </summary>
         public Quaternion TransientRotation => _internalTransientRotation;
 
+        private void Awake()
+        {
+            Transform = transform;
+            ValidateData();
+
+            _internalTransientPosition = Rigidbody.position;
+            _internalTransientRotation = Rigidbody.rotation;
+            InitialSimulationPosition = Rigidbody.position;
+            InitialSimulationRotation = Rigidbody.rotation;
+            LatestInterpolationPosition = Transform.position;
+            LatestInterpolationRotation = Transform.rotation;
+        }
+
+        private void OnEnable()
+        {
+            KinematicCharacterSystem.EnsureCreation();
+            KinematicCharacterSystem.RegisterPhysicsMover(this);
+        }
+
+        private void OnDisable()
+        {
+            KinematicCharacterSystem.UnregisterPhysicsMover(this);
+        }
 
         private void Reset()
         {
@@ -113,7 +136,7 @@ namespace KinematicCharacterController
         /// <summary>
         /// Handle validating all required values
         /// </summary>
-        public void ValidateData()
+        internal void ValidateData()
         {
             Rigidbody = gameObject.GetComponent<Rigidbody>();
             Rigidbody.centerOfMass = Vector3.zero;
@@ -121,30 +144,6 @@ namespace KinematicCharacterController
             Rigidbody.maxDepenetrationVelocity = Mathf.Infinity;
             Rigidbody.isKinematic = true;
             Rigidbody.interpolation = RigidbodyInterpolation.None;
-        }
-
-        private void OnEnable()
-        {
-            KinematicCharacterSystem.EnsureCreation();
-            KinematicCharacterSystem.RegisterPhysicsMover(this);
-        }
-
-        private void OnDisable()
-        {
-            KinematicCharacterSystem.UnregisterPhysicsMover(this);
-        }
-
-        private void Awake()
-        {
-            Transform = transform;
-            ValidateData();
-
-            _internalTransientPosition = Rigidbody.position;
-            _internalTransientRotation = Rigidbody.rotation;
-            InitialSimulationPosition = Rigidbody.position;
-            InitialSimulationRotation = Rigidbody.rotation;
-            LatestInterpolationPosition = Transform.position;
-            LatestInterpolationRotation = Transform.rotation;
         }
 
         /// <summary>
@@ -210,7 +209,7 @@ namespace KinematicCharacterController
         /// <summary>
         /// Caches velocity values based on delta time and target position/rotations
         /// </summary>
-        public void VelocityUpdate(float deltaTime)
+        internal void VelocityUpdate(float deltaTime)
         {
             InitialSimulationPosition = _internalTransientPosition;
             InitialSimulationRotation = _internalTransientRotation;
@@ -224,6 +223,13 @@ namespace KinematicCharacterController
                 Quaternion rotationFromCurrentToGoal = _internalTransientRotation * Quaternion.Inverse(InitialSimulationRotation);
                 AngularVelocity = rotationFromCurrentToGoal.eulerAngles * (Mathf.Deg2Rad / deltaTime);
             }
+        }
+
+        internal void SimulateDisplacement()
+        {
+            Transform.SetPositionAndRotation(_internalTransientPosition, _internalTransientRotation);
+            Rigidbody.position = _internalTransientPosition;
+            Rigidbody.rotation = _internalTransientRotation;
         }
     }
 

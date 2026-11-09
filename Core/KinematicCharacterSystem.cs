@@ -63,7 +63,7 @@ namespace KinematicCharacterController
             if (Interpolate)
                 PreSimulationInterpolationUpdate(deltaTime);
 
-            Simulate(deltaTime);
+            Simulate(deltaTime, _characterMotors, _physicsMovers);
 
             if (Interpolate)
                 PostSimulationInterpolationUpdate(deltaTime);
@@ -220,11 +220,7 @@ namespace KinematicCharacterController
             // Simulate PhysicsMover displacement
             for (int i = 0; i < physicsMoversCount; i++)
             {
-                PhysicsMover mover = movers[i];
-
-                mover.Transform.SetPositionAndRotation(mover.TransientPosition, mover.TransientRotation);
-                mover.Rigidbody.position = mover.TransientPosition;
-                mover.Rigidbody.rotation = mover.TransientRotation;
+                movers[i].SimulateDisplacement();
             }
 
             // Character controller update phase 2 and move

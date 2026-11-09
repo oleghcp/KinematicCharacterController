@@ -418,6 +418,27 @@ namespace KinematicCharacterController
         /// </summary>
         public Vector3 Velocity => BaseVelocity + _attachedRigidbodyVelocity;
 
+        private void Awake()
+        {
+            if (_motorTransform == null)
+                _motorTransform = transform;
+
+            ValidateData();
+
+            _transientPosition = _motorTransform.position;
+            TransientRotation = _motorTransform.rotation;
+
+            // Build CollidableLayers mask
+            CollidableLayers = 0;
+            for (int i = 0; i < 32; i++)
+            {
+                if (!Physics.GetIgnoreLayerCollision(gameObject.layer, i))
+                    CollidableLayers |= 1 << i;
+            }
+
+            SetCapsuleDimensions(_capsuleRadius, _capsuleHeight, _capsuleYOffset);
+        }
+
         private void OnEnable()
         {
             KinematicCharacterSystem.EnsureCreation();
@@ -450,7 +471,7 @@ namespace KinematicCharacterController
         /// <summary>
         /// Handle validating all required values
         /// </summary>
-        public void ValidateData()
+        internal void ValidateData()
         {
             _capsule = GetComponent<CapsuleCollider>();
             _capsuleRadius = Mathf.Clamp(_capsuleRadius, 0f, _capsuleHeight * 0.5f);
@@ -618,28 +639,7 @@ namespace KinematicCharacterController
             _characterTransformToCapsuleTop = _capsule.center + (_cachedWorldUp * (_capsule.height * 0.5f));
             _characterTransformToCapsuleBottomHemi = _capsule.center + (-_cachedWorldUp * (_capsule.height * 0.5f)) + (_cachedWorldUp * _capsule.radius);
             _characterTransformToCapsuleTopHemi = _capsule.center + (_cachedWorldUp * (_capsule.height * 0.5f)) + (-_cachedWorldUp * _capsule.radius);
-        }
-
-        private void Awake()
-        {
-            if (_motorTransform == null)
-                _motorTransform = transform;
-
-            ValidateData();
-
-            _transientPosition = _motorTransform.position;
-            TransientRotation = _motorTransform.rotation;
-
-            // Build CollidableLayers mask
-            CollidableLayers = 0;
-            for (int i = 0; i < 32; i++)
-            {
-                if (!Physics.GetIgnoreLayerCollision(gameObject.layer, i))
-                    CollidableLayers |= 1 << i;
-            }
-
-            SetCapsuleDimensions(_capsuleRadius, _capsuleHeight, _capsuleYOffset);
-        }
+        }  
 
         /// <summary>
         /// Update phase 1 is meant to be called after physics movers have calculated their velocities, but
@@ -650,7 +650,7 @@ namespace KinematicCharacterController
         /// - Ground probing
         /// - Handle detecting potential interactable rigidbodies
         /// </summary>
-        public void UpdatePhase1(float deltaTime)
+        internal void UpdatePhase1(float deltaTime)
         {
             // NaN propagation safety stop
             if (float.IsNaN(BaseVelocity.x) || float.IsNaN(BaseVelocity.y) || float.IsNaN(BaseVelocity.z))
@@ -898,7 +898,7 @@ namespace KinematicCharacterController
         /// - Solving Velocity
         /// - Applying planar constraint
         /// </summary>
-        public void UpdatePhase2(float deltaTime)
+        internal void UpdatePhase2(float deltaTime)
         {
             // Handle rotation
             CharacterController.UpdateRotation(ref _transientRotation, deltaTime);
