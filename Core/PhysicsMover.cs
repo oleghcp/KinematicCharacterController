@@ -1,5 +1,6 @@
 ﻿using System;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 namespace KinematicCharacterController
 {
@@ -14,11 +15,9 @@ namespace KinematicCharacterController
         private Vector3 _internalTransientPosition;
         private Quaternion _internalTransientRotation;
 
-        /// <summary>
-        /// The mover's Rigidbody
-        /// </summary>
         [ReadOnly]
-        public Rigidbody Rigidbody;
+        [SerializeField, FormerlySerializedAs("Rigidbody")]
+        private Rigidbody _rigidbody;
 
         /// <summary>
         /// Determines if the platform moves with rigidbody.MovePosition (when true), or with rigidbody.position (when false)
@@ -59,35 +58,41 @@ namespace KinematicCharacterController
         /// Index of this motor in KinematicCharacterSystem arrays
         /// </summary>
         public int IndexInCharacterSystem { get; set; }
+
         /// <summary>
         /// Remembers initial position before all simulation are done
         /// </summary>
         public Vector3 Velocity { get; protected set; }
+
         /// <summary>
         /// Remembers initial position before all simulation are done
         /// </summary>
         public Vector3 AngularVelocity { get; protected set; }
+
         /// <summary>
         /// Remembers initial position before all simulation are done
         /// </summary>
         public Vector3 InitialTickPosition { get; set; }
+
         /// <summary>
         /// Remembers initial rotation before all simulation are done
         /// </summary>
         public Quaternion InitialTickRotation { get; set; }
 
         /// <summary>
-        /// The mover's Transform
-        /// </summary>
-        public Transform Transform { get; private set; }
-        /// <summary>
         /// The character's position before the movement calculations began
         /// </summary>
         public Vector3 InitialSimulationPosition { get; private set; }
+
         /// <summary>
         /// The character's rotation before the movement calculations began
         /// </summary>
         public Quaternion InitialSimulationRotation { get; private set; }
+
+        /// <summary>
+        /// The mover's Rigidbody
+        /// </summary>
+        public Rigidbody Rigidbody => _rigidbody;
 
         /// <summary>
         /// The mover's rotation (always up-to-date during the character update phase)
@@ -101,15 +106,14 @@ namespace KinematicCharacterController
 
         private void Awake()
         {
-            Transform = transform;
             ValidateData();
 
-            _internalTransientPosition = Rigidbody.position;
-            _internalTransientRotation = Rigidbody.rotation;
-            InitialSimulationPosition = Rigidbody.position;
-            InitialSimulationRotation = Rigidbody.rotation;
-            LatestInterpolationPosition = Transform.position;
-            LatestInterpolationRotation = Transform.rotation;
+            _internalTransientPosition = _rigidbody.position;
+            _internalTransientRotation = _rigidbody.rotation;
+            InitialSimulationPosition = _rigidbody.position;
+            InitialSimulationRotation = _rigidbody.rotation;
+            LatestInterpolationPosition = transform.position;
+            LatestInterpolationRotation = transform.rotation;
         }
 
         private void OnEnable()
@@ -135,14 +139,14 @@ namespace KinematicCharacterController
         /// <summary>
         /// Handle validating all required values
         /// </summary>
-        internal void ValidateData()
+        private void ValidateData()
         {
-            Rigidbody = gameObject.GetComponent<Rigidbody>();
-            Rigidbody.centerOfMass = Vector3.zero;
-            Rigidbody.maxAngularVelocity = Mathf.Infinity;
-            Rigidbody.maxDepenetrationVelocity = Mathf.Infinity;
-            Rigidbody.isKinematic = true;
-            Rigidbody.interpolation = RigidbodyInterpolation.None;
+            _rigidbody = gameObject.GetComponent<Rigidbody>();
+            _rigidbody.centerOfMass = Vector3.zero;
+            _rigidbody.maxAngularVelocity = Mathf.Infinity;
+            _rigidbody.maxDepenetrationVelocity = Mathf.Infinity;
+            _rigidbody.isKinematic = true;
+            _rigidbody.interpolation = RigidbodyInterpolation.None;
         }
 
         /// <summary>
@@ -150,8 +154,8 @@ namespace KinematicCharacterController
         /// </summary>
         public void SetPosition(Vector3 position)
         {
-            Transform.position = position;
-            Rigidbody.position = position;
+            transform.position = position;
+            _rigidbody.position = position;
             InitialSimulationPosition = position;
             _internalTransientPosition = position;
         }
@@ -161,8 +165,8 @@ namespace KinematicCharacterController
         /// </summary>
         public void SetRotation(Quaternion rotation)
         {
-            Transform.rotation = rotation;
-            Rigidbody.rotation = rotation;
+            transform.rotation = rotation;
+            _rigidbody.rotation = rotation;
             InitialSimulationRotation = rotation;
             _internalTransientRotation = rotation;
         }
@@ -172,9 +176,9 @@ namespace KinematicCharacterController
         /// </summary>
         public void SetPositionAndRotation(Vector3 position, Quaternion rotation)
         {
-            Transform.SetPositionAndRotation(position, rotation);
-            Rigidbody.position = position;
-            Rigidbody.rotation = rotation;
+            transform.SetPositionAndRotation(position, rotation);
+            _rigidbody.position = position;
+            _rigidbody.rotation = rotation;
             InitialSimulationPosition = position;
             InitialSimulationRotation = rotation;
             _internalTransientPosition = position;
@@ -226,9 +230,9 @@ namespace KinematicCharacterController
 
         internal void SimulateDisplacement()
         {
-            Transform.SetPositionAndRotation(_internalTransientPosition, _internalTransientRotation);
-            Rigidbody.position = _internalTransientPosition;
-            Rigidbody.rotation = _internalTransientRotation;
+            transform.SetPositionAndRotation(_internalTransientPosition, _internalTransientRotation);
+            _rigidbody.position = _internalTransientPosition;
+            _rigidbody.rotation = _internalTransientRotation;
         }
     }
 

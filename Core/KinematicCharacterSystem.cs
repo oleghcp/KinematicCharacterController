@@ -118,7 +118,7 @@ namespace KinematicCharacterController
         /// <summary>
         /// Registers a KinematicCharacterMotor into the system
         /// </summary>
-        public void RegisterCharacterMotor(KinematicCharacterMotor motor)
+        internal void RegisterCharacterMotor(KinematicCharacterMotor motor)
         {
             _characterMotors.Add(motor);
         }
@@ -126,7 +126,7 @@ namespace KinematicCharacterController
         /// <summary>
         /// Unregisters a KinematicCharacterMotor from the system
         /// </summary>
-        public static void UnregisterCharacterMotor(KinematicCharacterMotor motor)
+        internal static void UnregisterCharacterMotor(KinematicCharacterMotor motor)
         {
             if (_instance)
                 _instance._characterMotors.Remove(motor);
@@ -135,7 +135,7 @@ namespace KinematicCharacterController
         /// <summary>
         /// Registers a PhysicsMover into the system
         /// </summary>
-        public void RegisterPhysicsMover(PhysicsMover mover)
+        internal void RegisterPhysicsMover(PhysicsMover mover)
         {
             _physicsMovers.Add(mover);
             mover.Rigidbody.interpolation = RigidbodyInterpolation.None;
@@ -144,7 +144,7 @@ namespace KinematicCharacterController
         /// <summary>
         /// Unregisters a PhysicsMover from the system
         /// </summary>
-        public static void UnregisterPhysicsMover(PhysicsMover mover)
+        internal static void UnregisterPhysicsMover(PhysicsMover mover)
         {
             if (_instance)
                 _instance._physicsMovers.Remove(mover);
@@ -175,7 +175,7 @@ namespace KinematicCharacterController
                 mover.InitialTickPosition = mover.TransientPosition;
                 mover.InitialTickRotation = mover.TransientRotation;
 
-                mover.Transform.SetPositionAndRotation(mover.TransientPosition, mover.TransientRotation);
+                mover.transform.SetPositionAndRotation(mover.TransientPosition, mover.TransientRotation);
                 mover.Rigidbody.position = mover.TransientPosition;
                 mover.Rigidbody.rotation = mover.TransientRotation;
             }
@@ -282,12 +282,13 @@ namespace KinematicCharacterController
             for (int i = 0; i < movers.Count; i++)
             {
                 PhysicsMover mover = movers[i];
+                Transform mTransform = mover.transform;
 
-                mover.Transform.SetPositionAndRotation(Vector3.Lerp(mover.InitialTickPosition, mover.TransientPosition, interpolationFactor),
-                                                       Quaternion.Slerp(mover.InitialTickRotation, mover.TransientRotation, interpolationFactor));
+                mTransform.SetPositionAndRotation(Vector3.Lerp(mover.InitialTickPosition, mover.TransientPosition, interpolationFactor),
+                                                  Quaternion.Slerp(mover.InitialTickRotation, mover.TransientRotation, interpolationFactor));
 
-                Vector3 newPos = mover.Transform.position;
-                Quaternion newRot = mover.Transform.rotation;
+                Vector3 newPos = mTransform.position;
+                Quaternion newRot = mTransform.rotation;
                 mover.PositionDeltaFromInterpolation = newPos - mover.LatestInterpolationPosition;
                 mover.RotationDeltaFromInterpolation = Quaternion.Inverse(mover.LatestInterpolationRotation) * newRot;
                 mover.LatestInterpolationPosition = newPos;
