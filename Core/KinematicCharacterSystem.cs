@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
+﻿using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using UnityEngine;
 
@@ -37,15 +35,29 @@ namespace KinematicCharacterController
         /// <summary>
         /// Gets the KinematicCharacterSystem instance if any
         /// </summary>
-        public static KinematicCharacterSystem Instance => _instance;
+        public static KinematicCharacterSystem Instance
+        {
+            get
+            {
+                if (_instance == null)
+                {
+                    GameObject systemGameObject = new GameObject(nameof(KinematicCharacterSystem));
+                    _instance = systemGameObject.AddComponent<KinematicCharacterSystem>();
+
+                    systemGameObject.hideFlags = HideFlags.NotEditable;
+                    _instance.hideFlags = HideFlags.NotEditable;
+
+                    DontDestroyOnLoad(systemGameObject);
+                }
+
+                return _instance;
+            }
+        }
+
+        public static bool Existing => _instance != null;
 
         public static IReadOnlyList<KinematicCharacterMotor> CharacterMotors => _instance._characterMotors;
         public static IReadOnlyList<PhysicsMover> PhysicsMovers => _instance._physicsMovers;
-
-        private void Awake()
-        {
-            _instance = this;
-        }
 
         // This is to prevent duplicating the singleton game object on script recompiles
         private void OnDisable()
@@ -73,30 +85,6 @@ namespace KinematicCharacterController
         {
             if (Interpolate)
                 CustomInterpolationUpdate();
-        }
-
-        [Obsolete("GetInstance is obsolete. Use Instance property instead.")]
-        [EditorBrowsable(EditorBrowsableState.Never)]
-        public static KinematicCharacterSystem GetInstance()
-        {
-            return _instance;
-        }
-
-        /// <summary>
-        /// Creates a KinematicCharacterSystem instance if there isn't already one
-        /// </summary>
-        public static void EnsureCreation()
-        {
-            if (_instance == null)
-            {
-                GameObject systemGameObject = new GameObject("KinematicCharacterSystem");
-                _instance = systemGameObject.AddComponent<KinematicCharacterSystem>();
-
-                systemGameObject.hideFlags = HideFlags.NotEditable;
-                _instance.hideFlags = HideFlags.NotEditable;
-
-                DontDestroyOnLoad(systemGameObject);
-            }
         }
 
         /// <summary>
@@ -130,9 +118,9 @@ namespace KinematicCharacterController
         /// <summary>
         /// Registers a KinematicCharacterMotor into the system
         /// </summary>
-        public static void RegisterCharacterMotor(KinematicCharacterMotor motor)
+        public void RegisterCharacterMotor(KinematicCharacterMotor motor)
         {
-            _instance._characterMotors.Add(motor);
+            _characterMotors.Add(motor);
         }
 
         /// <summary>
@@ -140,15 +128,16 @@ namespace KinematicCharacterController
         /// </summary>
         public static void UnregisterCharacterMotor(KinematicCharacterMotor motor)
         {
-            _instance._characterMotors.Remove(motor);
+            if (_instance)
+                _instance._characterMotors.Remove(motor);
         }
 
         /// <summary>
         /// Registers a PhysicsMover into the system
         /// </summary>
-        public static void RegisterPhysicsMover(PhysicsMover mover)
+        public void RegisterPhysicsMover(PhysicsMover mover)
         {
-            _instance._physicsMovers.Add(mover);
+            _physicsMovers.Add(mover);
             mover.Rigidbody.interpolation = RigidbodyInterpolation.None;
         }
 
@@ -157,7 +146,8 @@ namespace KinematicCharacterController
         /// </summary>
         public static void UnregisterPhysicsMover(PhysicsMover mover)
         {
-            _instance._physicsMovers.Remove(mover);
+            if (_instance)
+                _instance._physicsMovers.Remove(mover);
         }
 
         /// <summary>

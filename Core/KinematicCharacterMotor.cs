@@ -441,8 +441,7 @@ namespace KinematicCharacterController
 
         private void OnEnable()
         {
-            KinematicCharacterSystem.EnsureCreation();
-            KinematicCharacterSystem.RegisterCharacterMotor(this);
+            KinematicCharacterSystem.Instance.RegisterCharacterMotor(this);
         }
 
         private void OnDisable()
@@ -639,7 +638,7 @@ namespace KinematicCharacterController
             _characterTransformToCapsuleTop = _capsule.center + (_cachedWorldUp * (_capsule.height * 0.5f));
             _characterTransformToCapsuleBottomHemi = _capsule.center + (-_cachedWorldUp * (_capsule.height * 0.5f)) + (_cachedWorldUp * _capsule.radius);
             _characterTransformToCapsuleTopHemi = _capsule.center + (_cachedWorldUp * (_capsule.height * 0.5f)) + (-_cachedWorldUp * _capsule.radius);
-        }  
+        }
 
         /// <summary>
         /// Update phase 1 is meant to be called after physics movers have calculated their velocities, but

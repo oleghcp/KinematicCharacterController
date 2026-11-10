@@ -114,8 +114,7 @@ namespace KinematicCharacterController
 
         private void OnEnable()
         {
-            KinematicCharacterSystem.EnsureCreation();
-            KinematicCharacterSystem.RegisterPhysicsMover(this);
+            KinematicCharacterSystem.Instance.RegisterPhysicsMover(this);
         }
 
         private void OnDisable()

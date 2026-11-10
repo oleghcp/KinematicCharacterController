@@ -19,7 +19,6 @@ namespace KinematicCharacterController.Examples
 
         private void Start()
         {
-            KinematicCharacterSystem.EnsureCreation();
             CountField.text = SpawnCount.ToString();
             UpdateOnImages();
 
