@@ -95,6 +95,7 @@ namespace KinematicCharacterController
     /// <summary>
     /// Contains the simulation-relevant information for the motor's grounding status
     /// </summary>
+    [Serializable]
     public struct CharacterTransientGroundingReport
     {
         public bool FoundAnyGround;

@@ -586,7 +586,7 @@ namespace KinematicCharacterController
         /// </summary>
         public KinematicCharacterMotorState GetState()
         {
-            KinematicCharacterMotorState state = new KinematicCharacterMotorState
+            return new KinematicCharacterMotorState
             {
                 Position = _transientPosition,
                 Rotation = _transientRotation,
@@ -601,14 +601,12 @@ namespace KinematicCharacterController
                 GroundingStatus = (CharacterTransientGroundingReport)GroundingStatus,
                 AttachedRigidbody = _attachedRigidbody,
             };
-
-            return state;
         }
 
         /// <summary>
         /// Applies a motor state instantly
         /// </summary>
-        public void ApplyState(KinematicCharacterMotorState state, bool bypassInterpolation = true)
+        public void ApplyState(in KinematicCharacterMotorState state, bool bypassInterpolation = true)
         {
             SetPositionAndRotation(state.Position, state.Rotation, bypassInterpolation);
 
