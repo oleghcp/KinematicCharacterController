@@ -17,6 +17,8 @@ namespace KinematicCharacterController.Examples
         public int SpawnCount = 100;
         public float SpawnDistance = 2f;
 
+        private PhysicsSimulation _simulation;
+
         private void Start()
         {
             CountField.text = SpawnCount.ToString();
@@ -34,7 +36,7 @@ namespace KinematicCharacterController.Examples
         private void UpdateOnImages()
         {
             RenderOn.enabled = Camera.cullingMask == -1;
-            SimOn.enabled = Physics.autoSimulation;
+            SimOn.enabled = _simulation.Value;
             InterpOn.enabled = KinematicCharacterSystem.Instance.Interpolate;
         }
 
@@ -56,7 +58,7 @@ namespace KinematicCharacterController.Examples
 
         public void TogglePhysicsSim()
         {
-            Physics.autoSimulation = !Physics.autoSimulation;
+            _simulation.Switch();
             UpdateOnImages();
         }
 
@@ -88,6 +90,35 @@ namespace KinematicCharacterController.Examples
                 newChar.Motor.SetPosition(pos);
 
                 AIController.Characters.Add(newChar);
+            }
+        }
+
+        private struct PhysicsSimulation
+        {
+            public bool Value
+            {
+                get
+                {
+#if UNITY_2022_3_OR_NEWER
+                    return Physics.simulationMode != SimulationMode.Script;
+#else
+                    return Physics.autoSimulation;
+#endif
+                }
+                set
+                {
+#if UNITY_2022_3_OR_NEWER
+                    Physics.simulationMode = value ? SimulationMode.FixedUpdate
+                                                   : SimulationMode.Script;
+#else
+                    Physics.autoSimulation = value;
+#endif
+                }
+            }
+
+            public void Switch()
+            {
+                Value = !Value;
             }
         }
     }
