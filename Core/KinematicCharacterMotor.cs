@@ -67,7 +67,11 @@ namespace KinematicCharacterController
         /// </summary>
         [Tooltip("Physics material of the Character Capsule (Does not affect character movement. Only affects things colliding with it)")]
         [SerializeField, FormerlySerializedAs("CapsulePhysicsMaterial")]
+#if UNITY_6000_0_OR_NEWER
+        private PhysicsMaterial _capsulePhysicsMaterial;
+#else
         private PhysicMaterial _capsulePhysicsMaterial;
+#endif
 
         /// <summary>
         /// Increases the range of ground detection, to allow snapping to ground at very high speeds
@@ -1692,7 +1696,11 @@ namespace KinematicCharacterController
                         bool hitBodyIsDynamic = !bodyHit.Rigidbody.isKinematic;
                         float hitBodyMass = bodyHit.Rigidbody.mass;
                         float hitBodyMassAtPoint = bodyHit.Rigidbody.mass; // todo
+#if  UNITY_6000_0_OR_NEWER
+                        Vector3 hitBodyVelocity = bodyHit.Rigidbody.linearVelocity;
+#else
                         Vector3 hitBodyVelocity = bodyHit.Rigidbody.velocity;
+#endif
                         if (hitBodyIsCharacter)
                         {
                             hitBodyMass = hitCharacterMotor.SimulatedCharacterMass;
@@ -2078,7 +2086,11 @@ namespace KinematicCharacterController
         {
             if (deltaTime > 0f)
             {
+#if UNITY_6000_0_OR_NEWER
+                linearVelocity = interactiveRigidbody.linearVelocity;
+#else
                 linearVelocity = interactiveRigidbody.velocity;
+#endif
                 angularVelocity = interactiveRigidbody.angularVelocity;
                 if (interactiveRigidbody.isKinematic)
                 {
